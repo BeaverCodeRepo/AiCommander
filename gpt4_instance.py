@@ -7,7 +7,8 @@ import openai
 
 
 class Gpt4Instance:
-    def __init__(self, model, api_key, temperature, max_tokens, system_message=None):
+    def __init__(self, instance_id, model, api_key, temperature, max_tokens, system_message=None):
+        self.instance_id = instance_id
         self.model = model
         self.api_key = api_key
         self.temperature = temperature
@@ -29,8 +30,9 @@ class Gpt4Instance:
             stop=None,
             temperature=self.temperature,
         )
-        response_message = response.choices[0].text.strip()
+        response_message = response.choices[0]['message']['content']
         self.messages.append({"role": "assistant", "content": response_message})
+        print(colored(f"[{self.instance_id}]:", "magenta"), colored(response_message, "cyan"))
         return response_message
 
     def analyze_response(self, response):
@@ -67,7 +69,7 @@ class Gpt4Instance:
             return output_str
 
     def request_permission(self, action):
-        user_input = input(f"Do you want to allow the Gpt4Instance to {action}? (yes, no, or a number to pre-approve): ")
+        user_input = input(f"Do you want to allow the Gpt4Instance ({self.instance_id}) to {action}? (yes, no, or a number to pre-approve): ")
         if user_input.isdigit():
             self.pre_approved_executions = int(user_input)
             return True
