@@ -2,7 +2,7 @@ import json
 import subprocess
 import sys
 from io import StringIO
-
+from termcolor import colored
 import openai
 
 
@@ -18,6 +18,7 @@ class Gpt4Instance:
             self.messages.append({"role": "system", "content": system_message})
 
     def chat_completion(self, message):
+        print(colored("Sending message to GPT-4:", "white"), message)
         self.messages.append({"role": "user", "content": message})
         openai.api_key = self.api_key
         response = openai.ChatCompletion.create(
@@ -33,6 +34,7 @@ class Gpt4Instance:
         return response_message
 
     def analyze_response(self, response):
+        print(colored("Analyzing GPT-4 response:", "cyan"), response)
         try:
             json_data = json.loads(response)
             return json_data
@@ -40,6 +42,7 @@ class Gpt4Instance:
             return None
 
     def execute_shell_command(self, command):
+        print(colored("Executing shell command:", "yellow"), command)
         if self.pre_approved_executions > 0 or self.request_permission("execute a shell command"):
             if self.pre_approved_executions > 0:
                 self.pre_approved_executions -= 1
@@ -51,6 +54,7 @@ class Gpt4Instance:
         return "", ""
 
     def execute_python_code(self, code):
+        print(colored("Executing Python code:", "yellow"), code)
         if self.pre_approved_executions > 0 or self.request_permission("execute Python code"):
             if self.pre_approved_executions > 0:
                 self.pre_approved_executions -= 1
